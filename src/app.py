@@ -9,7 +9,6 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
-#from models import Person
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -27,23 +26,33 @@ CORS(app)
 setup_admin(app)
 
 # Handle/serialize errors like a JSON object
+
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
+
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
 
+#GET USERS
+
 @app.route('/user', methods=['GET'])
-def handle_hello():
+def get_users():
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+    #Obtener todos los datos de una tabla/modelo en particular
+    ##Fetch all records from a particular table/model
+    users= User.query.all()
 
-    return jsonify(response_body), 200
+    # Crear una lista (de diccionarios) con los usuarios. El metodo serialize() convierte los objetos en diccionarios
+    ## Create a list of dictionaries with the users. The serialize method converts the object to a dictionary
+    users_list= [element.serialize() for element in users]
+
+    return jsonify(users_list), 200
+
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
