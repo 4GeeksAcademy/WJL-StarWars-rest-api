@@ -115,7 +115,7 @@ def get_one_vehicles(vehicles_id):
         return 'Vehicle not found', 404
     return jsonify(oneVehicle.serialize()), 200
 
-#FAVORITE
+#GET FAVORITES
 
 @app.route('/users/favorites', methods=['GET'])
 def get_user_favorites():
@@ -126,19 +126,162 @@ def get_user_favorites():
     return jsonify(favorite_list), 200
 
 #ADD FAVORITES
+#FAVORITE PLANETS
+@app.route('/favorites/planets/<int:planets_id>', methods=['POST'])
+def add_favorite_planet(planets_id):
+    body=request.json
 
-@app.route('/favorites/planet/<int:planet_id>', methods=['POST'])
-def add_favorite_planet(planet_id):
-    # data = request.get_json()
-    # planet_id = data['planet_id']
-
-    # planet = Planets.query.get(planet_id)
-    new_favorite = Favorite(planet_id=planet_id)
+    #Revisar si el planets_id existe en la tabla/modelo
+    ##Check if the planets_id exists in the planets table
+    planet = Planets.query.get(planets_id)
+    if planet is None:
+        return 'Planet not found', 404
+    
+    #Revisar si el user_id existe en la tabla/modelo
+    ##Check if the user_id exists in the user table
+    user = User.query.get(body["user_id"])
+    if user is None:
+        return 'User not found', 404
+    
+    new_favorite = Favorite(user_id=body["user_id"], favorite_planets=planets_id)
 
     db.session.add(new_favorite)
     db.session.commit()
 
-    response_body={'msg':"Planeta ha sido agregado a favoritos"}
+    response_body={'msg':"Planeta has been added to Favorites"}
+
+    return jsonify(response_body), 200
+
+#FAVORITE CHARACTERS
+@app.route('/favorites/characters/<int:characters_id>', methods=['POST'])
+def add_favorite_character(characters_id):
+    body=request.json
+
+    #Revisar si el characters_id existe en la tabla/modelo
+    ##Check if the characters_id exists in the planets table
+    character = Characters.query.get(characters_id)
+    if character is None:
+        return 'Character not found', 404
+    
+    #Revisar si el user_id existe en la tabla/modelo
+    ##Check if the user_id exists in the user table
+    user = User.query.get(body["user_id"])
+    if user is None:
+        return 'User not found', 404
+    
+    new_favorite = Favorite(user_id=body["user_id"], favorite_characters=characters_id)
+
+    db.session.add(new_favorite)
+    db.session.commit()
+
+    response_body={'msg':"Characters has been added to Favorites"}
+
+    return jsonify(response_body), 200
+
+#FAVORITE VEHICLES
+@app.route('/favorites/vehicles/<int:vehicles_id>', methods=['POST'])
+def add_favorite_vehicle(vehicles_id):
+    body=request.json
+
+    #Revisar si el vehicles_id existe en la tabla/modelo
+    ##Check if the vehicles_id exists in the planets table
+    vehicle = Vehicles.query.get(vehicles_id)
+    if vehicle is None:
+        return 'vehicle not found', 404
+    
+    #Revisar si el user_id existe en la tabla/modelo
+    ##Check if the user_id exists in the user table
+    user = User.query.get(body["user_id"])
+    if user is None:
+        return 'User not found', 404
+    
+    new_favorite = Favorite(user_id=body["user_id"], favorite_vehicles=vehicles_id)
+
+    db.session.add(new_favorite)
+    db.session.commit()
+
+    response_body={'msg':"Characters has been added to Favorites"}
+
+    return jsonify(response_body), 200
+
+#DELETE FAVORITE PLANET
+@app.route('/favorites/planets/<int:planets_id>', methods=['DELETE'])
+def remove_favorite_planet(planets_id):
+    body=request.json
+
+    planet = Planets.query.get(planets_id)
+    if planet is None:
+        return 'Planet not found', 404
+    
+    user = User.query.get(body["user_id"])
+    if user is None:
+        return 'User not found', 404
+    
+    remove_favorite = Favorite.query.filter_by(
+        user_id=body["user_id"], 
+        favorite_planets=planets_id).first()
+    
+    if remove_favorite is None:
+        return 'Favorite not found', 404
+    
+    db.session.add(remove_favorite)
+    db.session.commit()
+
+    response_body={'msg':"Planeta has been removed from Favorites"}
+
+    return jsonify(response_body), 200
+
+#DELETE CHARACTERS
+@app.route('/favorites/characters/<int:characters_id>', methods=['DELETE'])
+def remove_favorite_character(characters_id):
+    body=request.json
+
+    character = Characters.query.get(characters_id)
+    if character is None:
+        return 'character not found', 404
+    
+    user = User.query.get(body["user_id"])
+    if user is None:
+        return 'User not found', 404
+    
+    remove_favorite = Favorite.query.filter_by(
+        user_id=body["user_id"], 
+        favorite_characters=characters_id).first()
+    
+    if remove_favorite is None:
+        return 'Favorite not found', 404
+    
+    db.session.add(remove_favorite)
+    db.session.commit()
+
+    response_body={'msg':"Character removed from Favorites"}
+
+    return jsonify(response_body), 200
+
+#DELETE VEHICLES
+@app.route('/favorites/vehicles/<int:vehicles_id>', methods=['DELETE'])
+def remove_favorite_vehicle(vehicles_id):
+    body=request.json
+
+    # vehicle = Vehicles.query.get(vehicles_id)
+    # if vehicle is None:
+    #     return 'vehicle not found', 404
+    
+    # user = User.query.get(body["user_id"])
+    # if user is None:
+    #     return 'User not found', 404
+    
+    remove_favorite = Favorite.query.filter_by(
+        user_id=body["user_id"], 
+        favorite_vehicles=vehicles_id).first()
+    
+    if remove_favorite is None:
+        return 'Favorite not found', 404
+    
+    db.session.add(remove_favorite)
+    db.session.commit()
+
+    response_body={'msg':"Vehicle has been removed from Favorites"}
 
     return jsonify(response_body), 200
 

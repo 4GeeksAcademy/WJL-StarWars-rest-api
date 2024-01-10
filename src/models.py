@@ -113,6 +113,12 @@ class Favorite(db.Model):
     planets = db.relationship("Planets", back_populates="favorites")
     vehicles = db.relationship("Vehicles", back_populates="favorites")
 
+    def __init__(self,user_id,favorite_characters=None,favorite_planets=None):
+        self.user_id=user_id
+        self.favorite_characters=favorite_characters
+        self.favorite_planets=favorite_planets
+
+
     def __repr__(self):
         return '<Favorite %r>' % self.id
     
